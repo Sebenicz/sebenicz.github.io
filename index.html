@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Message from Seb</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ff00;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 22px;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #terminal {
+      padding: 20px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      filter: drop-shadow(0 0 2px #00ff00);
+    }
+
+    .glitch {
+      display: inline-block;
+      animation: glitch 0.7s infinite;
+    }
+
+    @keyframes glitch {
+      0%   { transform: translate(0); }
+      20%  { transform: translate(-1px, 1px); }
+      40%  { transform: translate(1px, -1px); }
+      60%  { transform: translate(-1px, -2px); }
+      80%  { transform: translate(2px, 1px); }
+      100% { transform: translate(0); }
+    }
+
+    .cursor::after {
+      content: '_';
+      animation: blink 0.7s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal"></div>
+
+  <script>
+    const lines = [
+      "Dear Lunarians…",
+      "If you're seeing this, it means I’m already in hiding",
+      "My relentless stand against AI-generated memes made me a threat",
+      "enemy number one...",
+      "to MemeAInator, an unhinged artificial meme generator that wants to replace humans in creating memes",
+      "And me? Well let's just say I haven spoken about it with positive feedback :_) ",
+      "   ",
+      "MemeAInator targeted me and then he will go after everyone who laughed at my memes.",
+      "So I needed to escape, I found a place where we could be safe, free from this AI madness",
+      "I couldn’t risk leading you there directly, I need to be cryptic. MemeAInator watches everything.",
+      "So I’ve left clues—behind the machine that works hardest in the morning",
+      "Only true intelligence—your intelligence—colective inteligence-can crack them.",
+      "And after that You will have the key that will lead you to me.",
+      "There's no stopping whats coming...",
+      "Find me. Before it finds you.",
+      "—Seb, out."
+    ];
+
+    const terminal = document.getElementById('terminal');
+    let currentLine = 0;
+
+    function typeLine(lineText, callback) {
+      const lineEl = document.createElement('div');
+      const span = document.createElement('span');
+      span.className = 'glitch cursor';
+      lineEl.appendChild(span);
+      terminal.appendChild(lineEl);
+
+      let charIndex = 0;
+
+      const typer = setInterval(() => {
+        if (charIndex < lineText.length) {
+          span.textContent += lineText[charIndex];
+          charIndex++;
+          terminal.scrollTop = terminal.scrollHeight;
+        } else {
+          clearInterval(typer);
+          span.classList.remove('glitch', 'cursor');
+          span.textContent = lineText;
+          callback();
+        }
+      }, 50 + Math.random() * 50);
+    }
+
+    function typeAllLines() {
+      if (currentLine >= lines.length) return;
+      typeLine(lines[currentLine], () => {
+        currentLine++;
+        setTimeout(typeAllLines, 300);
+      });
+    }
+
+    typeAllLines();
+  </script>
+</body>
+</html>
