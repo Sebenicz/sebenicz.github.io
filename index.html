@@ -1,110 +1,630 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Message from Seb</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: black;
-      color: #00ff00;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 22px;
-      height: 100vh;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SolarNonsense Email Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    #terminal {
-      padding: 20px;
-      white-space: pre-wrap;
-      line-height: 1.6;
-      filter: drop-shadow(0 0 2px #00ff00);
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-    .glitch {
-      display: inline-block;
-      animation: glitch 0.7s infinite;
-    }
+        /* Matrix-style falling letters background */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
 
-    @keyframes glitch {
-      0%   { transform: translate(0); }
-      20%  { transform: translate(-1px, 1px); }
-      40%  { transform: translate(1px, -1px); }
-      60%  { transform: translate(-1px, -2px); }
-      80%  { transform: translate(2px, 1px); }
-      100% { transform: translate(0); }
-    }
+        .matrix-column {
+            position: absolute;
+            top: -100%;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 14px;
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
 
-    .cursor::after {
-      content: '_';
-      animation: blink 0.7s steps(1) infinite;
-    }
+        @keyframes fall {
+            0% {
+                top: -100%;
+                opacity: 1;
+            }
+            100% {
+                top: 100vh;
+                opacity: 0;
+            }
+        }
 
-    @keyframes blink {
-      50% { opacity: 0; }
-    }
-  </style>
+        /* Glow effect for containers */
+        .auth-container, .inbox-container {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .auth-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .login-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover {
+            background: #ff5252;
+        }
+
+        .error {
+            color: #ff6b6b;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* Email Inbox Styles */
+        .inbox-container {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .inbox-header {
+            background: #f8f9fa;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inbox-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .logout-btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #ff5252;
+        }
+
+        .email-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .email-item {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .email-item:hover {
+            background: #f8f9fa;
+        }
+
+        .email-item.unread {
+            background: #e3f2fd;
+            font-weight: bold;
+        }
+
+        .email-checkbox {
+            width: 20px;
+            height: 20px;
+        }
+
+        .email-sender {
+            min-width: 200px;
+            font-weight: 500;
+        }
+
+        .email-subject {
+            flex: 1;
+            color: #333;
+        }
+
+        .email-date {
+            color: #666;
+            font-size: 0.9rem;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        .email-content {
+            display: none;
+            padding: 2rem;
+            border-top: 1px solid #e0e0e0;
+            background: #fafafa;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .email-content.active {
+            display: block;
+        }
+
+        .email-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .email-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .email-meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .email-meta-label {
+            font-weight: bold;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .email-meta-value {
+            color: #333;
+            margin-top: 0.25rem;
+        }
+
+        .email-body {
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .email-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .email-sender, .email-date {
+                min-width: auto;
+            }
+            
+            .email-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div id="terminal"></div>
+    <!-- Matrix Background -->
+    <div class="matrix-bg" id="matrixBg"></div>
+    
+    <!-- Authentication Form -->
+    <div class="auth-container" id="authContainer">
+        <div class="logo">SolarNonsense</div>
+        <form class="auth-form" id="authForm">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="login-btn">Login</button>
+            <div class="error" id="errorMessage">Invalid credentials. Please try again.</div>
+        </form>
+    </div>
 
-  <script>
-    const lines = [
-      "Dear Lunarians…",
-      "If you're seeing this, it means I’m already in hiding",
-      "My relentless stand against AI-generated memes made me a threat",
-      "enemy number one...",
-      "to MemeAInator, an unhinged artificial meme generator that wants to replace humans in creating memes",
-      "And me? Well let's just say I haven spoken about it with positive feedback :_) ",
-      "   ",
-      "MemeAInator targeted me and then he will go after everyone who laughed at my memes.",
-      "So I needed to escape, I found a place where we could be safe, free from this AI madness",
-      "I couldn’t risk leading you there directly, I need to be cryptic. MemeAInator watches everything.",
-      "So I’ve left clues—behind the machine that works hardest in the morning",
-      "Only true intelligence—your intelligence—colective inteligence-can crack them.",
-      "And after that You will have the key that will lead you to me.",
-      "There's no stopping whats coming...",
-      "Find me. Before it finds you.",
-      "—Seb, out."
-    ];
+    <!-- Email Inbox -->
+    <div class="inbox-container" id="inboxContainer">
+        <div class="inbox-header">
+            <div class="inbox-title">📧 SolarNonsense Email Portal</div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="email-list" id="emailList">
+            <!-- Email items will be populated by JavaScript -->
+        </div>
+        
+        <div class="email-content" id="emailContent">
+            <!-- Email content will be populated by JavaScript -->
+        </div>
+    </div>
 
-    const terminal = document.getElementById('terminal');
-    let currentLine = 0;
+    <script>
+        // Simple authentication (for fun - not secure!)
+        const validCredentials = {
+            'i.m.evil@solarnonsense.fun': 'IMeVill0veM0ney!$',
+        };
 
-    function typeLine(lineText, callback) {
-      const lineEl = document.createElement('div');
-      const span = document.createElement('span');
-      span.className = 'glitch cursor';
-      lineEl.appendChild(span);
-      terminal.appendChild(lineEl);
+        const emails = [
+            {
+                id: 1,
+                sender: 'i.m.evil@solarnonsense.fun',
+                subject: 'Operation: Prosperity Retrieval — proposal',
+                date: '14 Oct 2025, 09:12',
+                read: true,
+                thread: [
+                    {
+                        from: 'i.m.evil@solarnonsense.fun',
+                        to: 'cfo@solarnonsense.fun',
+                        date: '14 Oct 2025, 09:12',
+                        subject: 'Operation: Prosperity Retrieval — proposal',
+                        body: `Dear CFO,
 
-      let charIndex = 0;
+Fortune smiles on the daring. I have confirmation that Lunar Logic's cuddly mascot harbours something of enormous value — a talisman of prosperity (yes, I know how absurd that sounds; that's the point). It appears the object is concealed within their mascot (a plush crocodile — delightfully quaint).
 
-      const typer = setInterval(() => {
-        if (charIndex < lineText.length) {
-          span.textContent += lineText[charIndex];
-          charIndex++;
-          terminal.scrollTop = terminal.scrollHeight;
-        } else {
-          clearInterval(typer);
-          span.classList.remove('glitch', 'cursor');
-          span.textContent = lineText;
-          callback();
+If you wish for a stable flow of earnings and fewer "mysterious invoice delays," I can retrieve it. I will require approval for reasonable expenses (transport, specialized retrieval equipment, and a small contingency for theatrics).
+
+Typical timeline: entry during off-hours, quick retrieval, minimal fuss. I will ensure deniability and full documentation of expenses for your ledger.
+
+Awaiting your green light. I.M. Evil
+
+P.S. I fully appreciate subtlety — I will wear the appropriate hat.`
+                    },
+                    {
+                        from: 'cfo@solarnonsense.fun',
+                        to: 'i.m.evil@solarnonsense.fun',
+                        date: '14 Oct 2025, 09:27',
+                        subject: 'Re: Operation: Prosperity Retrieval — proposal',
+                        body: `Approved. Do it.
+
+We'll cover reasonable expenses — submit receipts to "Miscellaneous — Prosperity Initiative." Do what's necessary. I don't care how it looks as long as the books start behaving.
+
+Proceed with discretion.
+
+— CFO`
+                    }
+                ]
+            },
+            {
+                id: 2,
+                sender: 'i.m.evil@solarnonsense.fun',
+                subject: 'Procurement: Discreet Supplies (urgent)',
+                date: '14 Oct 2025, 09:35',
+                read: true,
+                thread: [
+                    {
+                        from: 'i.m.evil@solarnonsense.fun',
+                        to: 'ops.assistant@solarnonsense.fun',
+                        date: '14 Oct 2025, 09:35',
+                        subject: 'Procurement: Discreet Supplies (urgent)',
+                        body: `Hello — please order the following immediately and arrange discreet shipping (no branded boxes, please):
+
+Lightweight adjustable climbing harness ×1
+Locking carabiners ×4
+Telescoping retrieval pole ×1
+Precision craft blade (for delicate fabric work) ×1
+Pair of stealth gloves (rubberized grip) ×1
+
+Ship to: back entrance. Mark package: "decorative office supplies."
+Charge to code: Prosperity Ops / Misc.
+
+Time is of the essence. Prefer same-day dispatch if available. Thank you.
+
+— I.M. Evil
+Head of Strategic Malevolence`
+                    },
+                    {
+                        from: 'ops.assistant@solarnonsense.fun',
+                        to: 'i.m.evil@solarnonsense.fun',
+                        date: '14 Oct 2025, 09:43',
+                        subject: 'Re: Procurement: Discreet Supplies (urgent)',
+                        body: `Hi — received.
+
+I'll place the orders now and request matte-black packaging and discreet invoicing as instructed. Quick notes / questions:
+
+• Precision craft blade — to keep shipping simple I'll order a "precision fabric cutter (craft use)" and mark it as office supplies. Is that OK?
+• Delivery: courier can do back-entrance drop at 18:00 today. Should I hold packages at reception until then?
+• Charge code confirmed: Prosperity Ops / Misc. Please confirm the approver's initials for the purchase order.
+
+Placing orders now — will update you with tracking numbers.
+
+— Ops Assistant (very professional, slightly bewildered)`
+                    }
+                ]
+            },
+            {
+                id: 3,
+                sender: 'evilshop@villainware.fun',
+                subject: '🔥 New! Evil Essentials — cloaks, monologue mics, and more 🔥',
+                date: '14 Oct 2025, 09:40',
+                read: false,
+                thread: [
+                    {
+                        from: 'evilshop@villainware.fun',
+                        to: 'i.m.evil@solarnonsense.fun',
+                        date: '14 Oct 2025, 09:40',
+                        subject: '🔥 New! Evil Essentials — cloaks, monologue mics, and more 🔥',
+                        body: `Dear Connoisseur of Consequence,
+
+Check out our new arrivals:
+
+The Midnight Cloak™ (now with dramatic swirl)
+Portable Thunder (for ambience)
+"Villain-Approved" Thermal Mug (keeps lava warm)
+Deluxe "Evil Laugh" echo box (USB)
+
+Free shipping on orders over €99. Use code: OVERTHROW10.
+
+Stay menacing,
+VillainWare — accessorize your agenda`
+                    }
+                ]
+            },
+            {
+                id: 4,
+                sender: 'academy@villaininstitute.fun',
+                subject: '😈 Unlock Your Inner Villain — Evil Laugh Masterclass (Enroll Today!)',
+                date: '14 Oct 2025, 09:51',
+                read: false,
+                thread: [
+                    {
+                        from: 'academy@villaininstitute.fun',
+                        to: 'i.m.evil@solarnonsense.fun',
+                        date: '14 Oct 2025, 09:51',
+                        subject: '😈 Unlock Your Inner Villain — Evil Laugh Masterclass (Enroll Today!)',
+                        body: `Dear I.M. Evil,
+
+Is your evil laugh lacking that special something?
+
+Join our Evil Laugh Masterclass, taught by renowned villain vocal coach Dr. Mal C. Ous, author of "From Chuckle to Cackle: The Art of Malevolent Mirth."
+
+In just 3 sessions, you'll learn to:
+
+Develop a menacing tone that chills heroes to the bone
+Master the timing of a perfectly diabolical "Mwah-ha-ha"
+Add reverb and echo using only natural acoustics (no software!)
+
+💀 Bonus: Free access to our "Sinister Silence" workshop — because true evil knows when to pause dramatically.
+
+Enroll now and receive a complimentary Mirror Practice Kit (includes ominous lighting gel and fog sample).
+
+[Sign Up Now — It's Time to Laugh Like You Mean It]
+
+Yours darkly,
+The Villain Institute of Dramatic Domination`
+                    }
+                ]
+            }
+        ];
+
+        let currentEmailId = null;
+
+        // Authentication
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (validCredentials[username] === password) {
+                document.getElementById('authContainer').style.display = 'none';
+                document.getElementById('inboxContainer').style.display = 'block';
+                renderEmailList();
+            } else {
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // Render email list
+        function renderEmailList() {
+            const emailList = document.getElementById('emailList');
+            emailList.innerHTML = '';
+            
+            emails.forEach(email => {
+                const emailItem = document.createElement('div');
+                emailItem.className = `email-item ${!email.read ? 'unread' : ''}`;
+                emailItem.innerHTML = `
+                    <input type="checkbox" class="email-checkbox">
+                    <div class="email-sender">${email.sender}</div>
+                    <div class="email-subject">${email.subject}</div>
+                    <div class="email-date">${email.date}</div>
+                `;
+                emailItem.addEventListener('click', () => showEmail(email.id));
+                emailList.appendChild(emailItem);
+            });
         }
-      }, 50 + Math.random() * 50);
-    }
 
-    function typeAllLines() {
-      if (currentLine >= lines.length) return;
-      typeLine(lines[currentLine], () => {
-        currentLine++;
-        setTimeout(typeAllLines, 300);
-      });
-    }
+        // Show email content
+        function showEmail(emailId) {
+            const email = emails.find(e => e.id === emailId);
+            if (!email) return;
+            
+            currentEmailId = emailId;
+            email.read = true;
+            
+            const emailContent = document.getElementById('emailContent');
+            emailContent.innerHTML = `
+                <button class="back-btn" onclick="showEmailList()">← Back to Inbox</button>
+                <div class="email-header">
+                    <h2>${email.subject}</h2>
+                </div>
+                ${email.thread.map(message => `
+                    <div class="email-meta">
+                        <div class="email-meta-item">
+                            <div class="email-meta-label">From:</div>
+                            <div class="email-meta-value">${message.from}</div>
+                        </div>
+                        <div class="email-meta-item">
+                            <div class="email-meta-label">To:</div>
+                            <div class="email-meta-value">${message.to}</div>
+                        </div>
+                        <div class="email-meta-item">
+                            <div class="email-meta-label">Date:</div>
+                            <div class="email-meta-value">${message.date}</div>
+                        </div>
+                        <div class="email-meta-item">
+                            <div class="email-meta-label">Subject:</div>
+                            <div class="email-meta-value">${message.subject}</div>
+                        </div>
+                    </div>
+                    <div class="email-body">${message.body}</div>
+                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ddd;">
+                `).join('')}
+            `;
+            emailContent.classList.add('active');
+            
+            // Update the email list to reflect read status
+            renderEmailList();
+        }
 
-    typeAllLines();
-  </script>
+        // Show email list
+        function showEmailList() {
+            document.getElementById('emailContent').classList.remove('active');
+            currentEmailId = null;
+        }
+
+        // Logout
+        function logout() {
+            document.getElementById('authContainer').style.display = 'block';
+            document.getElementById('inboxContainer').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            showEmailList();
+        }
+
+        // Matrix background effect
+        function createMatrixEffect() {
+            const matrixBg = document.getElementById('matrixBg');
+            const solarNonsenseLetters = 'SOLARNONSENSEsolarnonsense0123456789';
+            const matrixChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            // Create columns of falling letters
+            for (let i = 0; i < 50; i++) {
+                const column = document.createElement('div');
+                column.className = 'matrix-column';
+                column.style.left = Math.random() * 100 + '%';
+                column.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                column.style.animationDelay = Math.random() * 2 + 's';
+                
+                let text = '';
+                const columnLength = Math.floor(Math.random() * 20) + 10;
+                
+                for (let j = 0; j < columnLength; j++) {
+                    // 70% chance to use SolarNonsense letters, 30% regular matrix chars
+                    if (Math.random() < 0.7) {
+                        text += solarNonsenseLetters[Math.floor(Math.random() * solarNonsenseLetters.length)];
+                    } else {
+                        text += matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                    }
+                    text += '<br>';
+                }
+                
+                column.innerHTML = text;
+                matrixBg.appendChild(column);
+            }
+        }
+
+        // Initialize
+        document.getElementById('inboxContainer').style.display = 'none';
+        createMatrixEffect();
+    </script>
 </body>
 </html>
