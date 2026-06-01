@@ -1,0 +1,905 @@
+/* Importing fonts:
+   - Underdog: rough hand-drawn/stencil look, supports Polish characters
+   - Permanent Marker: bold marker letters for subheadings
+   - Special Elite: typewriter/grungy monospace for details & info
+   - Bebas Neue: bold condensed sans-serif for labels/buttons
+*/
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Special+Elite&family=Underdog&display=swap');
+
+:root {
+  --bg-color: #0b0b12;
+  --accent-pink: #ff0055;
+  --accent-yellow: #ccff00;
+  --accent-cyan: #00f0ff;
+  --text-color: #f5f5fa;
+  --card-bg: #131322;
+  --tape-bg: #eae6df;
+  
+  --font-title: 'Underdog', cursive;
+  --font-marker: 'Permanent Marker', cursive;
+  --font-typewriter: 'Special Elite', monospace;
+  --font-display: 'Bebas Neue', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-typewriter);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Global Grain Overlay to give photocopy texture */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.12;
+  z-index: 9999;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Base Layout Container */
+.container {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Header & Logo styling */
+header {
+  text-align: center;
+  margin-top: 40px;
+  margin-bottom: 50px;
+  position: relative;
+}
+
+.logo-wrapper {
+  width: 170px;
+  height: 170px;
+  margin: 0 auto 20px;
+  border: 4px solid #fff;
+  border-radius: 4px;
+  box-shadow: 4px 6px 15px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  background-color: #000;
+  transform: rotate(-3deg);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.logo-wrapper:hover {
+  transform: rotate(3deg) scale(1.05);
+}
+
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Punk high-contrast / xerox look */
+  filter: grayscale(1) contrast(1.4) brightness(0.95);
+}
+
+h1.band-title {
+  font-family: var(--font-title);
+  font-size: 4rem;
+  margin: 10px 0;
+  color: #fff;
+  letter-spacing: 4px;
+  line-height: 1;
+  text-shadow: 0 0 10px rgba(255, 0, 85, 0.5), 0 0 20px rgba(255, 0, 85, 0.3);
+  animation: flicker 4s infinite alternate;
+}
+
+.tagline {
+  font-family: var(--font-marker);
+  font-size: 1.2rem;
+  color: var(--accent-yellow);
+  transform: rotate(-1deg);
+  margin-top: -5px;
+  margin-bottom: 25px;
+}
+
+/* Flickering title animation */
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    text-shadow: 0 0 10px rgba(255, 0, 85, 0.6), 0 0 20px rgba(255, 0, 85, 0.3);
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+    color: #bbb;
+  }
+}
+
+/* Sections */
+section {
+  margin-bottom: 60px;
+  position: relative;
+}
+
+.section-title {
+  font-family: var(--font-title);
+  font-size: 2.2rem;
+  text-transform: uppercase;
+  color: #fff;
+  border-bottom: 3px double rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+  letter-spacing: 2px;
+  position: relative;
+}
+
+.section-title::before {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--accent-pink);
+}
+
+/* Tape styles (Duct/Masking Tape effects) */
+.tape {
+  background-color: var(--tape-bg);
+  color: #111;
+  font-family: var(--font-marker);
+  font-size: 1rem;
+  padding: 6px 20px;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.4);
+  display: inline-block;
+  transform: rotate(-2deg);
+  clip-path: polygon(
+    0% 0%, 4% 15%, 1% 35%, 5% 55%, 2% 75%, 4% 100%,
+    96% 100%, 98% 80%, 95% 60%, 99% 40%, 96% 20%, 100% 0%
+  );
+  user-select: none;
+}
+
+.tape-yellow {
+  background-color: var(--accent-yellow);
+}
+
+.tape-pink {
+  background-color: var(--accent-pink);
+  color: #fff;
+}
+
+.tape-cyan {
+  background-color: var(--accent-cyan);
+}
+
+/* Sticker Wall for Socials */
+.sticker-wall {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin: 30px auto;
+  max-width: 480px;
+}
+
+.sticker {
+  display: inline-block;
+  padding: 8px 16px;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-radius: 2px;
+  box-shadow: 3px 4px 8px rgba(0,0,0,0.5);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+  position: relative;
+  border: 2px solid transparent;
+}
+
+.sticker-instagram {
+  background-color: #e1306c;
+  color: #fff;
+  border-color: #fff;
+  transform: rotate(-3deg);
+}
+
+.sticker-facebook {
+  background-color: #1877f2;
+  color: #fff;
+  border: 2px dashed #fff;
+  transform: rotate(2deg);
+}
+
+.sticker-youtube {
+  background-color: #ff0000;
+  color: #fff;
+  border-color: #000;
+  transform: rotate(-1deg);
+}
+
+.sticker-spotify {
+  background-color: #1db954;
+  color: #fff;
+  border: 2.5px double #fff;
+  transform: rotate(4deg);
+}
+
+.sticker-tiktok {
+  background-color: #000000;
+  color: #fff;
+  border-color: var(--accent-cyan);
+  transform: rotate(-4deg);
+}
+
+.sticker:hover {
+  transform: scale(1.15);
+  box-shadow: 6px 10px 16px rgba(0,0,0,0.6);
+  z-index: 10;
+}
+
+/* Concerts Section styled as Gig Poster Flyer */
+.concerts-flyer {
+  background-color: #12121b;
+  border: 3px solid #fff;
+  box-shadow: 6px 6px 0px #000, 0px 0px 20px rgba(204, 255, 0, 0.15);
+  padding: 25px 20px;
+  position: relative;
+  transform: rotate(0.5deg);
+  margin-top: 20px;
+}
+
+/* Perforated torn paper edge on top/bottom of flyer */
+.concerts-flyer::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 5%;
+  right: 5%;
+  height: 8px;
+  background-image: radial-gradient(circle, #fff 3px, transparent 4px);
+  background-size: 12px 8px;
+  z-index: 3;
+}
+
+.flyer-heading {
+  font-family: var(--font-title);
+  color: var(--accent-yellow);
+  font-size: 1.8rem;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  transform: rotate(-1deg);
+  text-shadow: 2px 2px 0px #000;
+}
+
+.concert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.concert-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.15);
+  padding-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.concert-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.concert-date-badge {
+  background-color: var(--accent-pink);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  padding: 4px 10px;
+  transform: rotate(-2deg);
+  font-weight: bold;
+  box-shadow: 2px 2px 0px #000;
+  flex-shrink: 0;
+}
+
+.concert-info {
+  flex-grow: 1;
+  padding-left: 15px;
+  padding-right: 10px;
+}
+
+.concert-name {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.concert-location {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.concert-location span {
+  color: var(--accent-cyan);
+  font-weight: bold;
+}
+
+.concert-btn {
+  background-color: transparent;
+  border: 2px solid var(--accent-yellow);
+  color: var(--accent-yellow);
+  padding: 4px 12px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%);
+  flex-shrink: 0;
+}
+
+.concert-row:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  transform: translateX(3px);
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+.concert-row:hover .concert-btn {
+  background-color: var(--accent-yellow);
+  color: #000;
+  box-shadow: 2px 2px 0px #000;
+}
+
+.no-concerts {
+  text-align: center;
+  padding: 20px 0;
+  font-family: var(--font-typewriter);
+  color: #888;
+  font-style: italic;
+}
+
+.loading-concerts {
+  text-align: center;
+  padding: 20px 0;
+  color: var(--accent-cyan);
+  font-weight: bold;
+  animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Music Section: Spotify + Cover Albums */
+.music-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.spotify-embed {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 4px 6px 15px rgba(0,0,0,0.5);
+  background-color: #000;
+}
+
+.releases-container {
+  margin-top: 10px;
+}
+
+.releases-title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 25px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Redesigned Centered Grid for Releases */
+.releases-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 50px 10px 20px;
+  overflow: visible;
+}
+
+/* Vinyl Card Container */
+/* Simplified Static Release Cover Wrapper */
+.release-cover-wrapper {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  border-radius: 3px;
+  box-shadow: 3px 5px 12px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background-color: #222;
+}
+
+.release-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+/* Redesigned Static Album Release Cards */
+.release-card {
+  background-color: #12121b;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  padding: 20px 15px;
+  width: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 4px 4px 0px #000;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.release-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 6px 6px 0px #000;
+  border-color: var(--accent-pink);
+}
+
+.release-card:hover .release-cover-img {
+  transform: scale(1.05);
+}
+
+.release-info {
+  margin-top: 15px;
+  text-align: center;
+  width: 100%;
+}
+
+.release-name {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  color: #fff;
+  margin-bottom: 5px;
+  line-height: 1.3;
+  height: 2.6rem; /* fixed height for alignment */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.release-status {
+  font-family: var(--font-typewriter);
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  margin-bottom: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.release-status.coming-soon {
+  color: var(--accent-yellow);
+}
+
+.release-btn {
+  display: block;
+  width: 100%;
+  background-color: var(--accent-yellow);
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-decoration: none;
+  text-align: center;
+  padding: 8px 10px;
+  border: 2px solid #000;
+  box-shadow: 2px 2px 0px #000;
+  transition: all 0.2s ease;
+  clip-path: polygon(3% 0%, 100% 0%, 97% 100%, 0% 100%);
+}
+
+.release-btn:hover {
+  background-color: var(--accent-pink);
+  color: #fff;
+  box-shadow: 3px 3px 0px #000;
+}
+
+/* Interactive Polaroid Stack Section */
+.gallery-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gallery-tip {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 10px;
+  text-align: center;
+  font-style: italic;
+}
+
+.polaroid-pile {
+  position: relative;
+  width: 280px;
+  height: 380px;
+  margin: 20px auto 40px;
+}
+
+.polaroid-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #f7f7f5;
+  color: #111;
+  padding: 12px;
+  box-sizing: border-box;
+  box-shadow: 4px 8px 20px rgba(0,0,0,0.6);
+  border-radius: 2px;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.polaroid-img-wrapper {
+  width: 100%;
+  height: 270px;
+  background-color: #ddd;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #c8c8c5;
+}
+
+.polaroid-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.08) contrast(1.05) brightness(0.95);
+  transition: filter 0.3s ease;
+}
+
+.polaroid-card:hover .polaroid-img {
+  filter: sepia(0) contrast(1.1) brightness(1);
+}
+
+.polaroid-caption {
+  font-family: var(--font-title);
+  font-size: 1.1rem;
+  text-align: center;
+  margin-top: 15px;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+/* Tape on Polaroid helper class */
+.polaroid-card::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(2deg);
+  width: 90px;
+  height: 25px;
+  background-color: rgba(234, 230, 223, 0.7);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+  clip-path: polygon(
+    0% 0%, 5% 15%, 2% 40%, 6% 65%, 1% 90%, 5% 100%,
+    95% 100%, 98% 85%, 94% 60%, 98% 30%, 95% 10%, 100% 0%
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+.polaroid-card:nth-child(even)::after {
+  transform: translateX(-50%) rotate(-3deg);
+  background-color: rgba(204, 255, 0, 0.45); /* Acid tape */
+}
+
+/* Polaroid toss animation class triggered by Javascript */
+.polaroid-card.throwing {
+  transform: translate(-300px, -50px) rotate(-35deg) scale(0.95) !important;
+  z-index: 50 !important;
+}
+
+/* Contact Box Styled as Newspaper Ransom Note */
+.contact-zine {
+  background-color: #12121b;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  padding: 30px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.ransom-text {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+.ransom-letter {
+  display: inline-block;
+  padding: 6px 12px;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: bold;
+  box-shadow: 2px 2px 0px #000;
+  text-transform: uppercase;
+}
+
+.letter-1 { background-color: #fff; color: #000; transform: rotate(-5deg); }
+.letter-2 { background-color: var(--accent-pink); color: #fff; transform: rotate(4deg); }
+.letter-3 { background-color: var(--accent-yellow); color: #000; transform: rotate(-2deg); }
+.letter-4 { background-color: #000; color: #fff; border: 1px solid #fff; transform: rotate(3deg); }
+.letter-5 { background-color: var(--accent-cyan); color: #000; transform: rotate(-4deg); }
+.letter-6 { background-color: #fff; color: var(--accent-pink); transform: rotate(1deg); }
+.letter-7 { background-color: #222; color: #fff; transform: rotate(-3deg); }
+
+.contact-details {
+  font-family: var(--font-typewriter);
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.contact-email {
+  display: inline-block;
+  color: var(--accent-yellow);
+  font-weight: bold;
+  text-decoration: none;
+  border-bottom: 1.5px dashed var(--accent-yellow);
+  padding-bottom: 2px;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.contact-email:hover {
+  color: var(--accent-pink);
+  border-bottom-color: var(--accent-pink);
+  transform: scale(1.05) rotate(1deg);
+}
+
+/* Custom horizontal scrollbar for releases */
+.releases-grid {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-pink) var(--bg-color);
+}
+
+footer {
+  text-align: center;
+  padding: 40px 0;
+  font-size: 0.8rem;
+  color: #555;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+footer a {
+  color: #777;
+  text-decoration: none;
+}
+
+footer a:hover {
+  color: var(--accent-pink);
+}
+
+/* RESPONSIVE DESIGN FOR MEDIUM/DESKTOP SCREENS */
+@media (min-width: 768px) {
+  .container {
+    max-width: 740px;
+    padding: 40px 20px;
+  }
+  
+  header {
+    margin-top: 60px;
+  }
+  
+  .logo-wrapper {
+    width: 200px;
+    height: 200px;
+  }
+  
+  h1.band-title {
+    font-size: 5rem;
+  }
+  
+  .releases-grid {
+    overflow-x: visible;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 35px;
+    padding-bottom: 20px;
+  }
+  
+  .vinyl-container {
+    flex: 0 0 170px;
+  }
+  
+  .polaroid-pile {
+    width: 320px;
+    height: 420px;
+  }
+  
+  .polaroid-img-wrapper {
+    height: 310px;
+  }
+  
+  .concerts-flyer {
+    padding: 30px;
+  }
+}
+
+/* --- MERCH & ALBUM LINK STYLES --- */
+.release-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.merch-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #12121b;
+  border: 3px solid #fff;
+  padding: 20px;
+  box-shadow: 6px 6px 0px #000;
+  position: relative;
+  transform: rotate(-0.5deg);
+}
+
+.merch-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.merch-poster {
+  position: relative;
+  background-color: #000;
+  border: 2px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  box-shadow: 3px 5px 15px rgba(0,0,0,0.5);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.merch-poster:hover {
+  transform: scale(1.02) rotate(0.5deg);
+}
+
+.merch-img-wrapper {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.merch-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(1.1) brightness(0.95);
+  transition: transform 0.5s ease;
+}
+
+.merch-poster:hover .merch-img {
+  transform: scale(1.05);
+}
+
+/* Tape on merch corners */
+.merch-tape {
+  position: absolute;
+  background-color: var(--accent-yellow);
+  color: #000;
+  font-family: var(--font-marker);
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 5px 25px;
+  z-index: 10;
+  box-shadow: 1px 2px 5px rgba(0,0,0,0.3);
+  clip-path: polygon(
+    0% 0%, 5% 15%, 2% 40%, 6% 65%, 1% 90%, 5% 100%,
+    95% 100%, 98% 85%, 94% 60%, 98% 30%, 95% 10%, 100% 0%
+  );
+}
+
+.tape-top-left {
+  top: 15px;
+  left: -20px;
+  transform: rotate(-35deg);
+  background-color: var(--accent-pink);
+  color: #fff;
+}
+
+.tape-bottom-right {
+  bottom: 15px;
+  right: -20px;
+  transform: rotate(-35deg);
+  background-color: var(--accent-yellow);
+  color: #000;
+}
+
+.merch-banner {
+  background-color: #000;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  text-align: center;
+  padding: 10px;
+  border-top: 2px solid #fff;
+  letter-spacing: 1px;
+}
+
+.merch-poster:hover .merch-banner {
+  background-color: var(--accent-pink);
+  color: #fff;
+}
+
+.merch-description {
+  font-family: var(--font-typewriter);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: center;
+  color: #ccc;
+}
+
+.merch-btn {
+  display: inline-block;
+  background-color: var(--accent-yellow);
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+  padding: 10px 30px;
+  margin-top: 15px;
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0px #000;
+  transition: all 0.2s ease;
+  clip-path: polygon(2% 0%, 100% 0%, 98% 100%, 0% 100%);
+}
+
+.merch-btn:hover {
+  background-color: var(--accent-pink);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 5px 5px 0px #000;
+  animation: wiggle 0.2s infinite alternate;
+}
+
+/* RESPONSIVE DESIGN - DESKTOP EXTENSIONS */
+@media (min-width: 768px) {
+  .merch-container {
+    flex-direction: row;
+    align-items: center;
+    gap: 30px;
+    padding: 30px;
+  }
+  .merch-link {
+    flex: 0 0 300px;
+  }
+  .merch-description {
+    text-align: left;
+    flex-grow: 1;
+  }
+  .merch-btn {
+    margin-top: 20px;
+  }
+}
+

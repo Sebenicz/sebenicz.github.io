@@ -1,630 +1,223 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SolarNonsense Email Portal</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOTA - grajki ze Szczecina</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Oficjalna strona zespołu LOTA - polski punk rock ze Szczecina. Sprawdź nadchodzące koncerty, posłuchaj naszej muzyki na Spotify i śledź nas w mediach społecznościowych.">
+  <meta name="keywords" content="LOTA, zespół LOTA, punk rock, polski punk rock, Szczecin, koncert, Piwnica Kany, muzyka punkowa, rock, koncert Szczecin">
+  <meta name="author" content="LOTA">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="TODO">
+  <meta property="og:title" content="LOTA - Punk Rock, Metal, a czasami Reggae">
+  <meta property="og:description" content="Oficjalna strona zespołu LOTA. Koncerty, zdjęcia, muzyka i social media.">
+  <meta property="og:image" content="logo.jpg">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        /* Matrix-style falling letters background */
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .matrix-column {
-            position: absolute;
-            top: -100%;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 14px;
-            animation: fall linear infinite;
-            opacity: 0.8;
-        }
-
-        @keyframes fall {
-            0% {
-                top: -100%;
-                opacity: 1;
-            }
-            100% {
-                top: 100vh;
-                opacity: 0;
-            }
-        }
-
-        /* Glow effect for containers */
-        .auth-container, .inbox-container {
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.1);
-            border: 1px solid rgba(0, 255, 0, 0.2);
-        }
-
-        .auth-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #ff6b6b;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .form-group {
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #333;
-            font-weight: 500;
-        }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        input[type="text"]:focus, input[type="password"]:focus {
-            outline: none;
-            border-color: #ff6b6b;
-        }
-
-        .login-btn {
-            background: #ff6b6b;
-            color: white;
-            padding: 0.75rem 2rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 1rem;
-        }
-
-        .login-btn:hover {
-            background: #ff5252;
-        }
-
-        .error {
-            color: #ff6b6b;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        /* Email Inbox Styles */
-        .inbox-container {
-            display: none;
-            width: 100%;
-            max-width: 1200px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-
-        .inbox-header {
-            background: #f8f9fa;
-            padding: 1rem 2rem;
-            border-bottom: 1px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .inbox-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .logout-btn {
-            background: #ff6b6b;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .logout-btn:hover {
-            background: #ff5252;
-        }
-
-        .email-list {
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .email-item {
-            padding: 1rem 2rem;
-            border-bottom: 1px solid #e0e0e0;
-            cursor: pointer;
-            transition: background 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .email-item:hover {
-            background: #f8f9fa;
-        }
-
-        .email-item.unread {
-            background: #e3f2fd;
-            font-weight: bold;
-        }
-
-        .email-checkbox {
-            width: 20px;
-            height: 20px;
-        }
-
-        .email-sender {
-            min-width: 200px;
-            font-weight: 500;
-        }
-
-        .email-subject {
-            flex: 1;
-            color: #333;
-        }
-
-        .email-date {
-            color: #666;
-            font-size: 0.9rem;
-            min-width: 120px;
-            text-align: right;
-        }
-
-        .email-content {
-            display: none;
-            padding: 2rem;
-            border-top: 1px solid #e0e0e0;
-            background: #fafafa;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .email-content.active {
-            display: block;
-        }
-
-        .email-header {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .email-meta {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .email-meta-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .email-meta-label {
-            font-weight: bold;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .email-meta-value {
-            color: #333;
-            margin-top: 0.25rem;
-        }
-
-        .email-body {
-            line-height: 1.6;
-            color: #333;
-            white-space: pre-wrap;
-        }
-
-        .back-btn {
-            background: #6c757d;
-            color: white;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 1rem;
-        }
-
-        .back-btn:hover {
-            background: #5a6268;
-        }
-
-        @media (max-width: 768px) {
-            .email-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-            
-            .email-sender, .email-date {
-                min-width: auto;
-            }
-            
-            .email-meta {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Matrix Background -->
-    <div class="matrix-bg" id="matrixBg"></div>
-    
-    <!-- Authentication Form -->
-    <div class="auth-container" id="authContainer">
-        <div class="logo">SolarNonsense</div>
-        <form class="auth-form" id="authForm">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
+
+  <!-- Main Zine Container -->
+  <div class="container">
+
+    <!-- Header Section -->
+    <header>
+      <div class="logo-wrapper">
+        <img class="logo-img" src="logo.jpg" alt="LOTA Logo Zespołu" id="band-logo-img">
+      </div>
+      
+      <!-- Sticker Wall for Social Links -->
+      <div class="sticker-wall" id="social-stickers-wall">
+        <a href="https://open.spotify.com/artist/6bPuACphHwdg0vtlPeSpUm" target="_blank" rel="noopener noreferrer" class="sticker sticker-spotify" id="link-spotify">Spotify</a>
+        <a href="https://www.instagram.com/zespol_lota" target="_blank" rel="noopener noreferrer" class="sticker sticker-instagram" id="link-instagram">Instagram</a>
+        <a href="https://www.facebook.com/zespollota" target="_blank" rel="noopener noreferrer" class="sticker sticker-facebook" id="link-facebook">Facebook</a>
+        <a href="https://www.youtube.com/@ZespoLOTA" target="_blank" rel="noopener noreferrer" class="sticker sticker-youtube" id="link-youtube">YouTube</a>
+        <a href="https://www.tiktok.com/@zespollota37" target="_blank" rel="noopener noreferrer" class="sticker sticker-tiktok" id="link-tiktok">TikTok</a>
+      </div>
+    </header>
+
+    <!-- Concerts Section -->
+    <section id="koncerty">
+      <h2 class="section-title">NADCHODZĄCE KONCERTY</h2>
+      
+      <div class="concerts-flyer">
+        <h3 class="flyer-heading">KIEDY I GDZIE GRAMY:</h3>
+        <div class="concert-list" id="concert-list">
+          <!-- Dynamically populated by script.js -->
+          <div class="loading-concerts">ŁADOWANIE KONCERTÓW...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Music Section -->
+    <section id="muzyka">
+      <h2 class="section-title">"MUZYKA"</h2>
+      
+      <div class="music-layout">
+        <!-- Spotify Embed Player -->
+        <div class="spotify-embed">
+          <iframe 
+            src="https://open.spotify.com/embed/artist/6bPuACphHwdg0vtlPeSpUm?utm_source=generator&theme=0" 
+            width="100%" 
+            height="352" 
+            frameBorder="0" 
+            allowfullscreen="" 
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+            loading="lazy">
+          </iframe>
+        </div>
+
+        <!-- Release covers with Vinyl slide-out animation -->
+        <div class="releases-container">
+          <div class="releases-title">KUP PŁYTĘ / WESPRZYJ NAS:</div>
+          <div class="releases-grid">
+            
+            <!-- Album 1 - Buy CD -->
+            <div class="release-card" id="card-release-1">
+              <div class="release-cover-wrapper">
+                <img class="release-cover-img" src="covers/476499042_18033610553612859_8883235713977463506_n.jpg" alt="LOTA Album - Na polach już wiatr nie wieje">
+              </div>
+              <div class="release-info">
+                <div class="release-name">NA POLACH JUŻ WIATR NIE WIEJE</div>
+                <div class="release-status">DOSTĘPNY NA CD</div>
+                <a href="https://allegro.pl/produkt/na-polach-juz-wiatr-nie-wieje-lota-cd-9c6c49ee-e006-4ef1-82c1-1feb0a84e6f6?offerId=18241237495" target="_blank" rel="noopener noreferrer" class="release-btn">KUP CD</a>
+              </div>
             </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+
+            <!-- Album 2 - Coming Soon Fundraiser -->
+            <div class="release-card" id="card-release-2">
+              <div class="release-cover-wrapper">
+                <img class="release-cover-img" src="covers/476855948_18033564449612859_5773852306924452977_n.jpg" alt="LOTA Album - Nowy Album">
+              </div>
+              <div class="release-info">
+                <div class="release-name">NOWY ALBUM</div>
+                <div class="release-status coming-soon">WKRÓTCE (ZRZUTKA)</div>
+                <a href="https://zrzutka.pl/a8s578" target="_blank" rel="noopener noreferrer" class="release-btn">WESPRZYJ</a>
+              </div>
             </div>
-            <button type="submit" class="login-btn">Login</button>
-            <div class="error" id="errorMessage">Invalid credentials. Please try again.</div>
-        </form>
-    </div>
 
-    <!-- Email Inbox -->
-    <div class="inbox-container" id="inboxContainer">
-        <div class="inbox-header">
-            <div class="inbox-title">📧 SolarNonsense Email Portal</div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+          </div>
         </div>
+
+      </div>
+    </section>
+
+    <!-- Merch Section -->
+    <section id="merch">
+      <h2 class="section-title">MERCZYK</h2>
+      <div class="merch-container">
+        <a href="https://allegro.pl/uzytkownik/zespollota" target="_blank" rel="noopener noreferrer" class="merch-link" id="merch-allegro-store-link">
+          <div class="merch-poster">
+            <div class="merch-tape tape-top-left">SKLEP</div>
+            <div class="merch-img-wrapper">
+              <img src="merch.jpg" alt="Oficjalny Merch zespołu LOTA" class="merch-img">
+            </div>
+            <div class="merch-banner">KUP MERCH / KOSZULKI / PŁYTY</div>
+          </div>
+        </a>
+        <div class="merch-description">
+          Odwiedź nasze allegro, jak chcesz pokazać ludzią na około jak bardzo chujowy masz gust muzyczny.
+          <br>
+          <a href="https://allegro.pl/uzytkownik/zespollota" target="_blank" rel="noopener noreferrer" class="merch-btn" id="merch-shop-button">WEJDŹ DO SKLEPU</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Polaroid Pile Section -->
+    <section id="galeria">
+      <h2 class="section-title">Kurła kiedyś to było</h2>
+      
+      <div class="gallery-container">
         
-        <div class="email-list" id="emailList">
-            <!-- Email items will be populated by JavaScript -->
+        <div class="polaroid-pile" id="photo-polaroid-pile">
+          
+          <!-- Polaroid 1 -->
+          <div class="polaroid-card" id="polaroid-1">
+            <div class="polaroid-img-wrapper">
+              <img class="polaroid-img" src="band/540395061_18055677125612859_7787776596507619994_n.jpg" alt="LOTA koncert live">
+            </div>
+            <div class="polaroid-caption">włodek na basie</div>
+          </div>
+
+          <!-- Polaroid 2 -->
+          <div class="polaroid-card" id="polaroid-2">
+            <div class="polaroid-img-wrapper">
+              <img class="polaroid-img" src="band/555426336_687875187703592_5548191838636699372_n.jpg" alt="LOTA próba w garażu">
+            </div>
+            <div class="polaroid-caption">śpiewamy se hej</div>
+          </div>
+
+          <!-- Polaroid 3 -->
+          <div class="polaroid-card" id="polaroid-3">
+            <div class="polaroid-img-wrapper">
+              <img class="polaroid-img" src="band/588925312_18067276661612859_9084456840663361569_n.jpg" alt="LOTA portret zespołu">
+            </div>
+            <div class="polaroid-caption">kosa zawstydzony ogromem czoła</div>
+          </div>
+
+          <!-- Polaroid 4 -->
+          <div class="polaroid-card" id="polaroid-4">
+            <div class="polaroid-img-wrapper">
+              <img class="polaroid-img" src="band/622026415_18073011641612859_4860253111151863771_n.jpg" alt="LOTA na scenie">
+            </div>
+            <div class="polaroid-caption">pov dajesz piwo dziadowi</div>
+          </div>
+
+          <!-- Polaroid 5 -->
+          <div class="polaroid-card" id="polaroid-5">
+            <div class="polaroid-img-wrapper">
+              <img class="polaroid-img" src="band/622812961_18073011617612859_7953383328344451503_n.jpg" alt="LOTA backstage">
+            </div>
+            <div class="polaroid-caption">tam są drzwi</div>
+          </div>
+
+          <!-- Polaroid 6 -->
+          <div class="polaroid-card" id="polaroid-6">
+            <div class="polaroid-img-wrapper">
+              <img class="polaroid-img" src="band/641933933_18077143274612859_8204839777528296249_n.jpg" alt="LOTA ekipa">
+            </div>
+            <div class="polaroid-caption">lota znaczy ucieczka, ucieczka od dobrej muzyki</div>
+          </div>
+
         </div>
-        
-        <div class="email-content" id="emailContent">
-            <!-- Email content will be populated by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Booking / Contact Section -->
+    <section id="kontakt">
+      <h2 class="section-title">KONTAKT</h2>
+      
+      <div class="contact-zine" id="contact-details-box">
+        <div class="ransom-text">
+          <span class="ransom-letter letter-1">B</span>
+          <span class="ransom-letter letter-2">O</span>
+          <span class="ransom-letter letter-3">O</span>
+          <span class="ransom-letter letter-4">K</span>
+          <span class="ransom-letter letter-5">I</span>
+          <span class="ransom-letter letter-6">N</span>
+          <span class="ransom-letter letter-7">G</span>
         </div>
-    </div>
+        <div class="contact-details">
+          Chcesz zorganizować koncert? Masz pytania?<br>
+          Pisz śmiało przez nasze media społecznościowe lub na:<br>
+          <a href="mailto:zespollota00@gmail.com" class="contact-email" id="email-contact-link">zespollota00@gmail.com</a>
+        </div>
+      </div>
+    </section>
 
-    <script>
-        // Simple authentication (for fun - not secure!)
-        const validCredentials = {
-            'i.m.evil@solarnonsense.fun': 'IMeVill0veM0ney!$',
-        };
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 LOTA. Wszystkie piwa wyzerowane.</p>
+    </footer>
 
-        const emails = [
-            {
-                id: 1,
-                sender: 'i.m.evil@solarnonsense.fun',
-                subject: 'Operation: Prosperity Retrieval — proposal',
-                date: '14 Oct 2025, 09:12',
-                read: true,
-                thread: [
-                    {
-                        from: 'i.m.evil@solarnonsense.fun',
-                        to: 'cfo@solarnonsense.fun',
-                        date: '14 Oct 2025, 09:12',
-                        subject: 'Operation: Prosperity Retrieval — proposal',
-                        body: `Dear CFO,
+  </div>
 
-Fortune smiles on the daring. I have confirmation that Lunar Logic's cuddly mascot harbours something of enormous value — a talisman of prosperity (yes, I know how absurd that sounds; that's the point). It appears the object is concealed within their mascot (a plush crocodile — delightfully quaint).
-
-If you wish for a stable flow of earnings and fewer "mysterious invoice delays," I can retrieve it. I will require approval for reasonable expenses (transport, specialized retrieval equipment, and a small contingency for theatrics).
-
-Typical timeline: entry during off-hours, quick retrieval, minimal fuss. I will ensure deniability and full documentation of expenses for your ledger.
-
-Awaiting your green light. I.M. Evil
-
-P.S. I fully appreciate subtlety — I will wear the appropriate hat.`
-                    },
-                    {
-                        from: 'cfo@solarnonsense.fun',
-                        to: 'i.m.evil@solarnonsense.fun',
-                        date: '14 Oct 2025, 09:27',
-                        subject: 'Re: Operation: Prosperity Retrieval — proposal',
-                        body: `Approved. Do it.
-
-We'll cover reasonable expenses — submit receipts to "Miscellaneous — Prosperity Initiative." Do what's necessary. I don't care how it looks as long as the books start behaving.
-
-Proceed with discretion.
-
-— CFO`
-                    }
-                ]
-            },
-            {
-                id: 2,
-                sender: 'i.m.evil@solarnonsense.fun',
-                subject: 'Procurement: Discreet Supplies (urgent)',
-                date: '14 Oct 2025, 09:35',
-                read: true,
-                thread: [
-                    {
-                        from: 'i.m.evil@solarnonsense.fun',
-                        to: 'ops.assistant@solarnonsense.fun',
-                        date: '14 Oct 2025, 09:35',
-                        subject: 'Procurement: Discreet Supplies (urgent)',
-                        body: `Hello — please order the following immediately and arrange discreet shipping (no branded boxes, please):
-
-Lightweight adjustable climbing harness ×1
-Locking carabiners ×4
-Telescoping retrieval pole ×1
-Precision craft blade (for delicate fabric work) ×1
-Pair of stealth gloves (rubberized grip) ×1
-
-Ship to: back entrance. Mark package: "decorative office supplies."
-Charge to code: Prosperity Ops / Misc.
-
-Time is of the essence. Prefer same-day dispatch if available. Thank you.
-
-— I.M. Evil
-Head of Strategic Malevolence`
-                    },
-                    {
-                        from: 'ops.assistant@solarnonsense.fun',
-                        to: 'i.m.evil@solarnonsense.fun',
-                        date: '14 Oct 2025, 09:43',
-                        subject: 'Re: Procurement: Discreet Supplies (urgent)',
-                        body: `Hi — received.
-
-I'll place the orders now and request matte-black packaging and discreet invoicing as instructed. Quick notes / questions:
-
-• Precision craft blade — to keep shipping simple I'll order a "precision fabric cutter (craft use)" and mark it as office supplies. Is that OK?
-• Delivery: courier can do back-entrance drop at 18:00 today. Should I hold packages at reception until then?
-• Charge code confirmed: Prosperity Ops / Misc. Please confirm the approver's initials for the purchase order.
-
-Placing orders now — will update you with tracking numbers.
-
-— Ops Assistant (very professional, slightly bewildered)`
-                    }
-                ]
-            },
-            {
-                id: 3,
-                sender: 'evilshop@villainware.fun',
-                subject: '🔥 New! Evil Essentials — cloaks, monologue mics, and more 🔥',
-                date: '14 Oct 2025, 09:40',
-                read: false,
-                thread: [
-                    {
-                        from: 'evilshop@villainware.fun',
-                        to: 'i.m.evil@solarnonsense.fun',
-                        date: '14 Oct 2025, 09:40',
-                        subject: '🔥 New! Evil Essentials — cloaks, monologue mics, and more 🔥',
-                        body: `Dear Connoisseur of Consequence,
-
-Check out our new arrivals:
-
-The Midnight Cloak™ (now with dramatic swirl)
-Portable Thunder (for ambience)
-"Villain-Approved" Thermal Mug (keeps lava warm)
-Deluxe "Evil Laugh" echo box (USB)
-
-Free shipping on orders over €99. Use code: OVERTHROW10.
-
-Stay menacing,
-VillainWare — accessorize your agenda`
-                    }
-                ]
-            },
-            {
-                id: 4,
-                sender: 'academy@villaininstitute.fun',
-                subject: '😈 Unlock Your Inner Villain — Evil Laugh Masterclass (Enroll Today!)',
-                date: '14 Oct 2025, 09:51',
-                read: false,
-                thread: [
-                    {
-                        from: 'academy@villaininstitute.fun',
-                        to: 'i.m.evil@solarnonsense.fun',
-                        date: '14 Oct 2025, 09:51',
-                        subject: '😈 Unlock Your Inner Villain — Evil Laugh Masterclass (Enroll Today!)',
-                        body: `Dear I.M. Evil,
-
-Is your evil laugh lacking that special something?
-
-Join our Evil Laugh Masterclass, taught by renowned villain vocal coach Dr. Mal C. Ous, author of "From Chuckle to Cackle: The Art of Malevolent Mirth."
-
-In just 3 sessions, you'll learn to:
-
-Develop a menacing tone that chills heroes to the bone
-Master the timing of a perfectly diabolical "Mwah-ha-ha"
-Add reverb and echo using only natural acoustics (no software!)
-
-💀 Bonus: Free access to our "Sinister Silence" workshop — because true evil knows when to pause dramatically.
-
-Enroll now and receive a complimentary Mirror Practice Kit (includes ominous lighting gel and fog sample).
-
-[Sign Up Now — It's Time to Laugh Like You Mean It]
-
-Yours darkly,
-The Villain Institute of Dramatic Domination`
-                    }
-                ]
-            }
-        ];
-
-        let currentEmailId = null;
-
-        // Authentication
-        document.getElementById('authForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (validCredentials[username] === password) {
-                document.getElementById('authContainer').style.display = 'none';
-                document.getElementById('inboxContainer').style.display = 'block';
-                renderEmailList();
-            } else {
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 3000);
-            }
-        });
-
-        // Render email list
-        function renderEmailList() {
-            const emailList = document.getElementById('emailList');
-            emailList.innerHTML = '';
-            
-            emails.forEach(email => {
-                const emailItem = document.createElement('div');
-                emailItem.className = `email-item ${!email.read ? 'unread' : ''}`;
-                emailItem.innerHTML = `
-                    <input type="checkbox" class="email-checkbox">
-                    <div class="email-sender">${email.sender}</div>
-                    <div class="email-subject">${email.subject}</div>
-                    <div class="email-date">${email.date}</div>
-                `;
-                emailItem.addEventListener('click', () => showEmail(email.id));
-                emailList.appendChild(emailItem);
-            });
-        }
-
-        // Show email content
-        function showEmail(emailId) {
-            const email = emails.find(e => e.id === emailId);
-            if (!email) return;
-            
-            currentEmailId = emailId;
-            email.read = true;
-            
-            const emailContent = document.getElementById('emailContent');
-            emailContent.innerHTML = `
-                <button class="back-btn" onclick="showEmailList()">← Back to Inbox</button>
-                <div class="email-header">
-                    <h2>${email.subject}</h2>
-                </div>
-                ${email.thread.map(message => `
-                    <div class="email-meta">
-                        <div class="email-meta-item">
-                            <div class="email-meta-label">From:</div>
-                            <div class="email-meta-value">${message.from}</div>
-                        </div>
-                        <div class="email-meta-item">
-                            <div class="email-meta-label">To:</div>
-                            <div class="email-meta-value">${message.to}</div>
-                        </div>
-                        <div class="email-meta-item">
-                            <div class="email-meta-label">Date:</div>
-                            <div class="email-meta-value">${message.date}</div>
-                        </div>
-                        <div class="email-meta-item">
-                            <div class="email-meta-label">Subject:</div>
-                            <div class="email-meta-value">${message.subject}</div>
-                        </div>
-                    </div>
-                    <div class="email-body">${message.body}</div>
-                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid #ddd;">
-                `).join('')}
-            `;
-            emailContent.classList.add('active');
-            
-            // Update the email list to reflect read status
-            renderEmailList();
-        }
-
-        // Show email list
-        function showEmailList() {
-            document.getElementById('emailContent').classList.remove('active');
-            currentEmailId = null;
-        }
-
-        // Logout
-        function logout() {
-            document.getElementById('authContainer').style.display = 'block';
-            document.getElementById('inboxContainer').style.display = 'none';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            showEmailList();
-        }
-
-        // Matrix background effect
-        function createMatrixEffect() {
-            const matrixBg = document.getElementById('matrixBg');
-            const solarNonsenseLetters = 'SOLARNONSENSEsolarnonsense0123456789';
-            const matrixChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
-            
-            // Create columns of falling letters
-            for (let i = 0; i < 50; i++) {
-                const column = document.createElement('div');
-                column.className = 'matrix-column';
-                column.style.left = Math.random() * 100 + '%';
-                column.style.animationDuration = (Math.random() * 8 + 6) + 's';
-                column.style.animationDelay = Math.random() * 2 + 's';
-                
-                let text = '';
-                const columnLength = Math.floor(Math.random() * 20) + 10;
-                
-                for (let j = 0; j < columnLength; j++) {
-                    // 70% chance to use SolarNonsense letters, 30% regular matrix chars
-                    if (Math.random() < 0.7) {
-                        text += solarNonsenseLetters[Math.floor(Math.random() * solarNonsenseLetters.length)];
-                    } else {
-                        text += matrixChars[Math.floor(Math.random() * matrixChars.length)];
-                    }
-                    text += '<br>';
-                }
-                
-                column.innerHTML = text;
-                matrixBg.appendChild(column);
-            }
-        }
-
-        // Initialize
-        document.getElementById('inboxContainer').style.display = 'none';
-        createMatrixEffect();
-    </script>
+  <!-- Client-side Logic Script -->
+  <script src="script.js"></script>
 </body>
 </html>
